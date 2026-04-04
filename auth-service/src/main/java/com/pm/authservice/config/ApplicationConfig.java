@@ -1,5 +1,6 @@
 package com.pm.authservice.config;
 
+import com.pm.authservice.exception.UserNotFoundException;
 import com.pm.authservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +23,7 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService(){
         return email->userRepository.findByEmailWithRolesAndPermissions(email)
-                .orElseThrow(()-> new UsernameNotFoundException("User not found"));
+                .orElseThrow(()-> new UserNotFoundException("User not found"));
     }
 
     @Bean

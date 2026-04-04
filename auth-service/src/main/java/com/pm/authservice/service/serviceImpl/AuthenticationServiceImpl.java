@@ -7,6 +7,8 @@ import com.pm.authservice.dto.request.RegisterRequest;
 import com.pm.authservice.dto.response.LoginResponse;
 import com.pm.authservice.dto.response.RefreshTokenResponse;
 import com.pm.authservice.dto.response.RegisterResponse;
+import com.pm.authservice.exception.RefreshTokenExpiredException;
+import com.pm.authservice.exception.UserNotFoundException;
 import com.pm.authservice.model.RefreshToken;
 import com.pm.authservice.model.User;
 import com.pm.authservice.model.enums.Status;
@@ -78,7 +80,7 @@ class AuthenticationServiceImpl implements AuthenticationService {
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(()->{
                     log.error("User not found for the email : {}", loginRequest.getEmail());
-                    return new UsernameNotFoundException("User not found for the respective email u have given");
+                    return new UserNotFoundException("User not found for the respective email u have given");
                 });
 
         authenticationManager.authenticate(
@@ -118,11 +120,11 @@ class AuthenticationServiceImpl implements AuthenticationService {
 
         RefreshToken refreshToken1 = token.get();
         if (refreshToken1.isRevoked()) {
-            throw new RuntimeException("Refresh token already used or revoked");
+            throw new RefreshTokenExpiredException("Refresh token already used or revoked");
         }
 
         refreshToken1.setRevoked(true);
         refreshTokenRepository.save(refreshToken1);
-       return "Logged out successfully."; // After logged out the front end should clear it's clear storage
+       return "Logged out successfully."; // After logged out the front end should clear it's storage
     }
 }

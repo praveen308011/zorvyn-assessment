@@ -1,5 +1,6 @@
 package com.pm.authservice.config;
 
+import com.pm.authservice.exception.JwtTokenMissingException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,6 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         token = authenticationHeader.substring(7);
         userEmail = jwtService.extractUsername(token);
+        if(token.isBlank()) throw new JwtTokenMissingException("JWT Token is Missing");
 
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() != null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
