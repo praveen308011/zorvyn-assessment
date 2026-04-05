@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+
+            - id: auth-service-route
+              uri: http://localhost:4001
+              predicates:
+                - Path=/api/v1/auth/**
+
+            - id: user-service-route
+              uri: http://localhost:4001
+              predicates:
+                - Path=/api/v1/users/**,/api/v1/roles/**,/api/v1/permissions/**
+              filters:
+                - name: JwtValidationFilterFactory
+
+            - id: finance-service-route
+              uri: http://localhost:4002
+              predicates:
+                - Path=/api/v1/records/**,/api/v1/dashboard/**
+              filters:
+                - name: JwtValidationFilterFactory
+
+
+server:
+  port: 4000
+jwt:
+  secret: 78671601656c8b698f497cf3b9f6995248d8d6bd59b1c65344f02b6839324b86

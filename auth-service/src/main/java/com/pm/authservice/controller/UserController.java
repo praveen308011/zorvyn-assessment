@@ -6,6 +6,7 @@ import com.pm.authservice.dto.response.UserResponse;
 import com.pm.authservice.dto.response.UserRolesResponse;
 import com.pm.authservice.dto.response.UserStatusResponse;
 import com.pm.authservice.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +50,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}/roles") // This end-point can perform assign/unassign roles for a specific user
-    public ResponseEntity<AssignRolesResponse> assignRoles(@PathVariable UUID id, @RequestBody AssignRolesRequest assignRolesRequest){
+    public ResponseEntity<AssignRolesResponse> assignRoles(@PathVariable UUID id, @Valid  @RequestBody AssignRolesRequest assignRolesRequest){
         return ResponseEntity.status(HttpStatus.OK)
                 .body(userService.assignRoles(id, assignRolesRequest));
     }

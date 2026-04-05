@@ -16,6 +16,7 @@ import com.pm.authservice.repository.RefreshTokenRepository;
 import com.pm.authservice.repository.UserRepository;
 import com.pm.authservice.service.AuthenticationService;
 import com.pm.authservice.service.RefreshTokenService;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -126,5 +127,16 @@ class AuthenticationServiceImpl implements AuthenticationService {
         refreshToken1.setRevoked(true);
         refreshTokenRepository.save(refreshToken1);
        return "Logged out successfully."; // After logged out the front end should clear it's storage
+    }
+
+    @Override
+    public boolean validateToken(String token) {
+        try{
+            jwtService.validateToken(token);
+            return true;
+        }
+        catch(JwtException ex) {
+            return false;
+        }
     }
 }

@@ -1,6 +1,8 @@
 package com.pm.authservice.config;
 
+import com.pm.authservice.model.User;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -11,6 +13,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +34,16 @@ public class JwtService {
 
     @Value("${jwt.refresh.token}")
     private long refreshExpiration; // to assign
+
+    private final Key verifyWithKey;
+
+
+    public JwtService(@Value("${jwt.secret}") String secret){
+        byte[] keyBytes = Base64.getDecoder().decode(secret.getBytes(
+                StandardCharsets.UTF_8
+        ));
+        this.verifyWithKey = Keys.hmacShaKeyFor(keyBytes);
+    }
 
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
@@ -50,6 +65,7 @@ public class JwtService {
         return Jwts.builder()
                 .claims(extraClaims)
                 .claim("authorities", authorities)
+                .claim("userId", ((User) userDetails).getId())
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
@@ -91,6 +107,18 @@ public class JwtService {
 
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
+    }
+
+    // for validating token from api-gateway
+    public void validateToken(String token){
+        try{
+            Jwts.parser()
+                    .verifyWith((SecretKey) verifyWithKey)
+                    .build()
+                    .parseSignedClaims(token);
+        } catch (JwtException e){
+            throw new JwtException("Invalid JWT");
+        }
     }
 
 }

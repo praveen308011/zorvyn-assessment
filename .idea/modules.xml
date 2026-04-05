@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/finance-service/finance-service.iml" filepath="$PROJECT_DIR$/finance-service/finance-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/zorvyn-assessment.iml" filepath="$PROJECT_DIR$/zorvyn-assessment.iml" />
     </modules>
   </component>

@@ -7,6 +7,7 @@ import com.pm.authservice.dto.response.LoginResponse;
 import com.pm.authservice.dto.response.RefreshTokenResponse;
 import com.pm.authservice.dto.response.RegisterResponse;
 import com.pm.authservice.service.AuthenticationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,19 +24,19 @@ public class AuthenticationController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest registerRequest){
+    public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest registerRequest){
         return ResponseEntity.status(HttpStatus.OK)
                 .body(authenticationService.registerUser(registerRequest));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest){
         return ResponseEntity.status(HttpStatus.OK)
                 .body(authenticationService.login(loginRequest));
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<RefreshTokenResponse> refresh(@RequestBody RefreshTokenRequest refreshTokenRequest){
+    public ResponseEntity<RefreshTokenResponse> refresh(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest){
         return ResponseEntity.status(HttpStatus.OK)
                 .body(authenticationService.refreshToken(refreshTokenRequest));
     }
@@ -46,5 +47,16 @@ public class AuthenticationController {
                 .body(authenticationService.logout(refreshToken));
     }
 
+    // This end-point will be called from api-gateway for JWT verification
+    @GetMapping("/validate")
+    public ResponseEntity<Void> validateToken(@RequestHeader("Authorization") String authHeader){
+        if(authHeader==null || !authHeader.startsWith("Bearer ")){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return authenticationService.validateToken(authHeader.substring(7))
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
 
 }

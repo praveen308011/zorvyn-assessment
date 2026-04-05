@@ -16,4 +16,6 @@ public interface AuthenticationService {
     RefreshTokenResponse refreshToken(RefreshTokenRequest refreshTokenRequest);
 
     String logout(String refreshToken);
+
+    boolean validateToken(String substring);
 }
