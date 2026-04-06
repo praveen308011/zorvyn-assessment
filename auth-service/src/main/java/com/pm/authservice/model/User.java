@@ -45,7 +45,7 @@ public class User implements UserDetails {
     )
     private Set<Role> roles;
 
-    // 🔥 Connection to refresh tokens
+    // Connection to refresh tokens
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<RefreshToken> refreshTokens = new HashSet<>();
 

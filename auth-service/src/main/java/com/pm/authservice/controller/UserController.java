@@ -1,17 +1,15 @@
 package com.pm.authservice.controller;
 
 import com.pm.authservice.dto.request.AssignRolesRequest;
-import com.pm.authservice.dto.response.AssignRolesResponse;
-import com.pm.authservice.dto.response.UserResponse;
-import com.pm.authservice.dto.response.UserRolesResponse;
-import com.pm.authservice.dto.response.UserStatusResponse;
+import com.pm.authservice.dto.request.RegisterRequest;
+import com.pm.authservice.dto.response.*;
+import com.pm.authservice.service.AuthenticationService;
 import com.pm.authservice.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +22,14 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+
+    private final AuthenticationService authenticationService;
+
+    @PostMapping("/register")
+    public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest registerRequest){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(authenticationService.registerUser(registerRequest));
+    }
 
     @GetMapping("")
     public ResponseEntity<List<UserResponse>> getUsers(){

@@ -21,9 +21,6 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest registerRequest){
         return ResponseEntity.status(HttpStatus.OK)
                 .body(authenticationService.registerUser(registerRequest));

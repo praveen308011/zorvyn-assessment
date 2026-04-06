@@ -17,6 +17,7 @@ import com.pm.authservice.repository.UserRepository;
 import com.pm.authservice.service.AuthenticationService;
 import com.pm.authservice.service.RefreshTokenService;
 import io.jsonwebtoken.JwtException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -68,7 +69,7 @@ class AuthenticationServiceImpl implements AuthenticationService {
                 .userData(
                         RegisterResponse.UserData.builder()
                                 .id(savedUser.getId())
-                                .email(savedUser.getEmail())
+                                .email(savedUser.getName())
                                 .name(savedUser.getEmail())
                                 .status(savedUser.getStatus().name())
                                 .build()

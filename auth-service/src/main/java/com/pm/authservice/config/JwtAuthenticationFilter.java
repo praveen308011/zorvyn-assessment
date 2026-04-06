@@ -32,6 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         if (request.getServletPath().contains("api/v1/auth")) {
             filterChain.doFilter(request, response);
+            return;
         }
 
         final String authenticationHeader = request.getHeader("Authorization");
@@ -47,7 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         userEmail = jwtService.extractUsername(token);
         if(token.isBlank()) throw new JwtTokenMissingException("JWT Token is Missing");
 
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() != null) {
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
             if (jwtService.validateToken(token, userDetails)) {
